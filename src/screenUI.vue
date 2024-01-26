@@ -5,7 +5,9 @@ import { reactive, ref, watchEffect } from 'vue';
 import { Tank } from "./tank/createTank"; 
 import  { Move }  from './tank/Move';
 import Heart from "./Heart.vue";
-
+import { enemyTank_move } from "./tank/enemy_move";
+//import { fireBaret, isFiring } from './tank/shoot';
+import { remainingTime } from "./tank/shoot";
 const moveInstance =  new Move();
 const Attack_Position = reactive({top:170, left:500});
 const Range_Position = reactive({top:100, left:600});
@@ -31,7 +33,7 @@ const moveRight = () => {
 };
 
 const ar_engine = useAREngine(); // シングルトンを取得
-const remainingTime = ref(180); // 初期値を設定（秒）
+//export　const remainingTime = ref(180); // 初期値を設定（秒）
 
 /*
 const shot_botton = () => {
@@ -41,14 +43,16 @@ const shot_botton = () => {
 
 // タイマーのカウントダウンロジック
 const timerInterval = setInterval(() => {
+  
   if (remainingTime.value <= 0) {
     clearInterval(timerInterval);
     alert('試合終了！');
-    const nextPageURL = `finish.html?`;
+    const nextPageURL = `defiet.html?`;
     window.location.href = nextPageURL;
     remainingTime.value = 3; // タイマーリセット(180秒)
   } else {
     remainingTime.value--;
+    enemyTank_move();
   }
 }, 1000);
 
@@ -71,6 +75,7 @@ watchEffect(() => {
       <div class="arrow-down" @click="moveDown"></div>
       <div class="arrow-left" @click="moveLeft"></div>
       <div class="arrow-right" @click="moveRight"></div>
+      
     </div>
     <Heart></Heart>
   

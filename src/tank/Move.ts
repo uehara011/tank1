@@ -36,22 +36,22 @@ const ar_Engine = useAREngine();
 export class Move {
     moveUp() {
     Tank.position.z += 1;
-    enemyTank_move();
+    //enemyTank_move();
     };
 
   moveDown() {
     Tank.position.z -= 1;
-    enemyTank_move();
+    //enemyTank_move();
     };
 
   moveLeft() {
     Tank.position.x -= 1;
-    enemyTank_move();
+    //enemyTank_move();
     }
 
   moveRight() {
     Tank.position.x += 1;
-    enemyTank_move();
+    //enemyTank_move();
     }
     
 }

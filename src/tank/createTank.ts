@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';  
-import { value_1 , value_2 , value_3 } from "./test_data"
+import { value_1 , value_2 , value_3 } from "./Tank_data"
 
 export const Tank = new THREE.Group();
 //Tankにaddされる

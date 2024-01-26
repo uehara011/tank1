@@ -23,7 +23,7 @@ export const useAREngine = (): AREngine => {
 }
 
 export class AREngine {
-    scene = new THREE.Scene();
+    scene = new THREE.Scene;
     renderer = new THREE.WebGLRenderer;
     baseNode?: THREE.Object3D;
     delegate?: AREngineDelegate;

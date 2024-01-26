@@ -1,54 +1,92 @@
-import * as Cannon from 'cannon';
-import { enemyTank } from './enemy_Tank';
-import { Tank } from './createTank';
-import {  useAREngine } from '@/AREngine';
-import * as Three from 'three';
+import { useAREngine } from "@/AREngine";
+import * as CANNON from "cannon";
+import * as THREE from "three"
+import { Tank } from "./createTank";
+import { enemyTank } from "./enemy_Tank";
+import { reactive, ref, watchEffect } from 'vue';
+import useHeart from "@/Heart";
+
 
 const ar_Engine = useAREngine();
-// Tankから発射されるBaret
-const baretGeometry = new Three.SphereGeometry();
-const baretMaterial = new Three.MeshBasicMaterial({ color: 0x00ff00 });
-const baretMesh = new Three.Mesh(baretGeometry, baretMaterial);
-ar_Engine.scene.add(baretMesh);
+export　const remainingTime = ref(30); 
 
-// 発射のトリガーフラグ
-export　let isFiring = false;
+let hasBaret = false;
 
-// 発射処理
-function fireBaret() {
-  const tankForward = new Three.Vector3(0, 0, -1); // 例としてTankの前方向と仮定
-  const baretSpeed = 0.1; // Baretの速度
+const radius = 0.25;
+const Baret_Body = new CANNON.Body({
+    mass: 5,
+    shape: new CANNON.Sphere(radius),
+    position: new CANNON.Vec3(0, Tank.position.y + 1, 0),
+});
 
-  // Tankの位置にBaretを配置
-  baretMesh.position.copy(Tank.position);
+const Baret = new THREE.Mesh(
+    new THREE.SphereGeometry(radius),
+    new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
+);
 
-  // Tankの向きに合わせてBaretを回転
-  baretMesh.quaternion.copy(Tank.quaternion);
+Baret.userData.physicsBody = Baret_Body;
+Baret_Body.threeMesh = Baret;
+Baret.position.copy(Tank.position)
 
-  // Baretを発射方向に動かす
-  baretMesh.translateOnAxis(tankForward, baretSpeed);
-
-  // シーンにBaretを追加
-  ar_Engine.scene.add(baretMesh);
-
-  // 発射後の処理（例: 一定時間後にBaretを削除する）
-  setTimeout(() => {
-    ar_Engine.scene.remove(baretMesh);
-  }, 1000); // 1000ミリ秒後に削除
+export function createBaret() {
+    ar_Engine.scene.add(Baret);
+    Tank.position.copy(Baret.position)
+    setInterval(() => {
+        Baret.position.x += 0.25;
+        console.log("0.25秒ごとに実行されるコード");
+    }, 250); 
+    if(Baret.position === enemyTank.position){
+        removeBaret()
+        //useHeart()
+    }else{
+        setTimeout(() => {
+            removeBaret();
+        }, 1500);
+    }
 }
 
-// Update loop
-function animate() {
-  requestAnimationFrame(animate);
-
-  // 発射フラグが立っている場合、Baretを発射
-  if (isFiring) {
-    fireBaret();
-    isFiring = false; // フラグをリセット
-  }
-
-  // 他の更新処理...
-  
-  ar_Engine.renderer.render(ar_Engine.scene, ar_Engine.camera);
+function removeBaret() {
+    if (ar_Engine.scene.getObjectByName("Baret")) {
+        ar_Engine.scene.remove(Baret);
+        ar_Engine.world.remove(Baret_Body);
+        hasBaret = false;
+    }
 }
-animate();
+
+/*
+export function createBaret(){
+    const radius = 0.1;
+    const Baret_Body = new CANNON.Body({
+    mass: 5, // kg
+    shape: new CANNON.Sphere(radius),
+    position: new CANNON.Vec3(0, Tank.position.y + 1, 0),
+    //material: new CANNON.Material({restitution: 1}),
+    });
+
+    const Baret = new THREE.Mesh(
+        new THREE.SphereGeometry(radius),
+        new THREE.MeshBasicMaterial({ color:0x00ff00 }),
+    )
+   
+    //Baret.position.copy(Baret_Body.position)
+    Baret.userData.physicsBody = Baret_Body;
+    Baret_Body.threeMesh = Baret;
+
+    Baret_Body.velocity.set(0, 1, 0); // 例として初速度を設定
+    Baret_Body.applyForce(new CANNON.Vec3(1,0.5,0), new CANNON.Vec3(0, 0, 0));
+    //applyForceの一つ目の引数に加える力のベクトル
+    //二つ目の引数に力が加わる場所。中心の場合は000
+
+    ar_Engine.scene.add(Baret);
+    ar_Engine.world.addBody(Baret_Body);
+
+    ar_Engine.world.step(1 / 60);
+    ar_Engine.renderer.render(ar_Engine.scene, ar_Engine.camera);
+    requestAnimationFrame(createBaret);
+    
+
+}
+*/
+
+
+//animate();

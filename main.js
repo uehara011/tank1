@@ -57,7 +57,7 @@ async function run(captures){
 
 
 
-  alert(n)
+  //alert(n)
 
 
   let mat = cv.imread(imgElement);
@@ -170,7 +170,7 @@ async function run(captures){
   
   list.push(n);
 
-  //alert(list)
+  alert(list)
   if (list.length === 3) {
     const nextPageURL = `game.html?value1=${list[0]}&value2=${list[1]}&value3=${list[2]}`;
     window.location.href = nextPageURL;
